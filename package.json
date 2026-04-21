@@ -1,0 +1,394 @@
+{
+  "name": "session-saver",
+  "displayName": "Session Saver",
+  "description": "Save and restore your VS Code working sessions",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "sessionSaver.startSession",
+        "title": "Start Session",
+        "icon": "$(add)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.saveSession",
+        "title": "Save Session",
+        "icon": "$(save)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.stopSession",
+        "title": "Stop Session",
+        "icon": "$(debug-stop)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.resumeSession",
+        "title": "Resume Session",
+        "icon": "$(play)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.deleteSession",
+        "title": "Delete Session",
+        "icon": "$(trash)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.setAgent",
+        "title": "Definir Agente de IA",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.logPrompt",
+        "title": "Registrar Chat de IA",
+        "icon": "$(add)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.openConversation",
+        "title": "Abrir Conversa",
+        "icon": "$(book)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.renameSession",
+        "title": "Renomear Sessão",
+        "icon": "$(edit)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.openSessionDiff",
+        "title": "Ver Diff Git",
+        "icon": "$(diff)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.openChangedFileDiff",
+        "title": "Ver Diff",
+        "icon": "$(diff)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.togglePinSession",
+        "title": "Fixar / Desafixar Sessão",
+        "icon": "$(pin)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.setSessionTicket",
+        "title": "Definir Ticket",
+        "icon": "$(link)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.openTicket",
+        "title": "Abrir Ticket",
+        "icon": "$(globe)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.copyTicket",
+        "title": "Copiar Ticket",
+        "icon": "$(copy)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.filterSessions",
+        "title": "Filtrar Sessões",
+        "icon": "$(search)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.clearSessionFilter",
+        "title": "Limpar Filtro",
+        "icon": "$(clear-all)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.toggleWorkspaceFilter",
+        "title": "Somente Este Workspace",
+        "icon": "$(root-folder)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.setSessionTags",
+        "title": "Editar Tags",
+        "icon": "$(tag)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.setSessionNotes",
+        "title": "Editar Nota",
+        "icon": "$(note)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.exportSessions",
+        "title": "Exportar Sessões (JSON)",
+        "icon": "$(export)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.showStats",
+        "title": "Ver Estatísticas",
+        "icon": "$(graph)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.filterByDate",
+        "title": "Filtrar por Período",
+        "icon": "$(calendar)",
+        "category": "Session Saver"
+      },
+      {
+        "command": "sessionSaver.toggleGroupByTicket",
+        "title": "Agrupar por Ticket",
+        "icon": "$(list-tree)",
+        "category": "Session Saver"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "sessionSaver.logPrompt",
+        "key": "ctrl+alt+l",
+        "mac": "cmd+alt+l",
+        "when": "sessionSaver.hasActiveSession"
+      },
+      {
+        "command": "sessionSaver.saveSession",
+        "key": "ctrl+alt+s",
+        "mac": "cmd+alt+s",
+        "when": "sessionSaver.hasActiveSession"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "session-saver",
+          "title": "Session Saver",
+          "icon": "images/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "session-saver": [
+        {
+          "id": "sessionSaver.activeSession",
+          "name": "Sessão Ativa"
+        },
+        {
+          "id": "sessionSaver.agentContext",
+          "name": "Agente de IA"
+        },
+        {
+          "id": "sessionSaver.changedFiles",
+          "name": "Arquivos Alterados"
+        },
+        {
+          "id": "sessionSaver.savedSessions",
+          "name": "Sessões Salvas"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "sessionSaver.saveSession",
+          "when": "view == sessionSaver.activeSession && sessionSaver.hasActiveSession",
+          "group": "navigation"
+        },
+        {
+          "command": "sessionSaver.stopSession",
+          "when": "view == sessionSaver.activeSession && sessionSaver.hasActiveSession",
+          "group": "navigation"
+        },
+        {
+          "command": "sessionSaver.startSession",
+          "when": "view == sessionSaver.activeSession && !sessionSaver.hasActiveSession",
+          "group": "navigation"
+        },
+        {
+          "command": "sessionSaver.filterSessions",
+          "when": "view == sessionSaver.savedSessions",
+          "group": "navigation"
+        },
+        {
+          "command": "sessionSaver.clearSessionFilter",
+          "when": "view == sessionSaver.savedSessions",
+          "group": "navigation"
+        },
+        {
+          "command": "sessionSaver.toggleWorkspaceFilter",
+          "when": "view == sessionSaver.savedSessions",
+          "group": "navigation"
+        },
+        {
+          "command": "sessionSaver.filterByDate",
+          "when": "view == sessionSaver.savedSessions",
+          "group": "navigation"
+        },
+        {
+          "command": "sessionSaver.toggleGroupByTicket",
+          "when": "view == sessionSaver.savedSessions",
+          "group": "navigation"
+        },
+        {
+          "command": "sessionSaver.showStats",
+          "when": "view == sessionSaver.savedSessions",
+          "group": "navigation"
+        },
+        {
+          "command": "sessionSaver.exportSessions",
+          "when": "view == sessionSaver.savedSessions",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "sessionSaver.openChangedFileDiff",
+          "when": "view == sessionSaver.changedFiles && viewItem =~ /^changedFile_(modified|deleted)$/",
+          "group": "inline"
+        },
+        {
+          "command": "sessionSaver.resumeSession",
+          "when": "view == sessionSaver.savedSessions && viewItem =~ /^savedSession/",
+          "group": "inline"
+        },
+        {
+          "command": "sessionSaver.togglePinSession",
+          "when": "view == sessionSaver.savedSessions && viewItem =~ /^savedSession/",
+          "group": "inline"
+        },
+        {
+          "command": "sessionSaver.renameSession",
+          "when": "view == sessionSaver.savedSessions && viewItem =~ /^savedSession/",
+          "group": "context"
+        },
+        {
+          "command": "sessionSaver.openSessionDiff",
+          "when": "view == sessionSaver.savedSessions && viewItem =~ /^savedSession/",
+          "group": "context"
+        },
+        {
+          "command": "sessionSaver.setSessionTicket",
+          "when": "view == sessionSaver.savedSessions && viewItem =~ /^savedSession/",
+          "group": "context"
+        },
+        {
+          "command": "sessionSaver.setSessionTags",
+          "when": "view == sessionSaver.savedSessions && viewItem =~ /^savedSession/",
+          "group": "context"
+        },
+        {
+          "command": "sessionSaver.setSessionNotes",
+          "when": "view == sessionSaver.savedSessions && viewItem =~ /^savedSession/",
+          "group": "context"
+        },
+        {
+          "command": "sessionSaver.openTicket",
+          "when": "view == sessionSaver.savedSessions && viewItem == savedSessionWithTicket",
+          "group": "context"
+        },
+        {
+          "command": "sessionSaver.copyTicket",
+          "when": "view == sessionSaver.savedSessions && viewItem == savedSessionWithTicket",
+          "group": "context"
+        },
+        {
+          "command": "sessionSaver.deleteSession",
+          "when": "view == sessionSaver.savedSessions && viewItem =~ /^savedSession/",
+          "group": "inline"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Session Saver",
+      "properties": {
+        "sessionSaver.autoSaveOnStop": {
+          "type": "boolean",
+          "default": true,
+          "description": "Save session automatically when stopping"
+        },
+        "sessionSaver.remindAfterMinutes": {
+          "type": "number",
+          "default": 60,
+          "description": "Remind to save after N minutes (0 = off)"
+        },
+        "sessionSaver.ai.provider": {
+          "type": "string",
+          "enum": [
+            "none",
+            "claude",
+            "openai",
+            "ollama"
+          ],
+          "default": "none",
+          "description": "AI provider for session summaries"
+        },
+        "sessionSaver.ai.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for the AI provider"
+        },
+        "sessionSaver.ai.ollamaUrl": {
+          "type": "string",
+          "default": "http://localhost:11434",
+          "description": "Ollama server URL"
+        },
+        "sessionSaver.ai.model": {
+          "type": "string",
+          "default": "",
+          "description": "AI model to use (e.g. llama3, gpt-4o)"
+        },
+        "sessionSaver.autoSaveOnCommit": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically save session when a git commit is made"
+        },
+        "sessionSaver.autoSaveIntervalMinutes": {
+          "type": "number",
+          "default": 0,
+          "description": "Auto-save session silently every N minutes (0 = off)"
+        },
+        "sessionSaver.suggestOnBranchChange": {
+          "type": "boolean",
+          "default": true,
+          "description": "Suggest starting a session when the git branch changes"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.19.39",
+    "@types/vscode": "^1.90.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.39.3",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.1"
+  },
+  "dependencies": {
+    "simple-git": "^3.36.0"
+  }
+}

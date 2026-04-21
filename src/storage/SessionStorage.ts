@@ -2,6 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { WorkSession } from '../types';
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+function assertSafeId(sessionId: string): void {
+  if (!UUID_RE.test(sessionId)) {
+    throw new Error(`Invalid session ID: "${sessionId}"`);
+  }
+}
+
 export class SessionStorage {
   private cache: WorkSession[] | null = null;
 
@@ -39,6 +47,7 @@ export class SessionStorage {
   }
 
   write(session: WorkSession): void {
+    assertSafeId(session.id);
     this.ensureDir();
     fs.writeFileSync(this.sessionPath(session.id), JSON.stringify(session, null, 2), 'utf-8');
     // Upsert in-memory cache instead of discarding it entirely
@@ -59,6 +68,7 @@ export class SessionStorage {
   }
 
   delete(session: WorkSession): void {
+    assertSafeId(session.id);
     const filePath = this.sessionPath(session.id);
     if (fs.existsSync(filePath)) { fs.unlinkSync(filePath); }
     const assetsDir = path.join(this.dir, `${session.id}.assets`);

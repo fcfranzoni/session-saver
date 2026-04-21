@@ -10,7 +10,12 @@ export class AISummarizer {
     const prompt = this.buildPrompt(session);
     const apiKey = config.get<string>('ai.apiKey', '');
     const model = config.get<string>('ai.model', '');
-    const ollamaUrl = config.get<string>('ai.ollamaUrl', 'http://localhost:11434');
+    const rawOllamaUrl = config.get<string>('ai.ollamaUrl', 'http://localhost:11434');
+    const ollamaUrl = this.sanitizeOllamaUrl(rawOllamaUrl);
+    if (provider === 'ollama' && !ollamaUrl) {
+      void vscode.window.showErrorMessage('Session Saver: ollamaUrl must point to localhost or 127.0.0.1.');
+      return undefined;
+    }
 
     try {
       if (provider === 'claude') {
@@ -88,6 +93,17 @@ export class AISummarizer {
     });
     const json = await res.json() as { choices?: { message?: { content?: string } }[] };
     return json.choices?.[0]?.message?.content?.trim() ?? '';
+  }
+
+  /** Returns the URL only if it targets loopback; otherwise undefined. */
+  private sanitizeOllamaUrl(raw: string): string | undefined {
+    try {
+      const u = new URL(raw);
+      if (u.hostname === 'localhost' || u.hostname === '127.0.0.1' || u.hostname === '::1') {
+        return raw;
+      }
+    } catch { /* invalid URL */ }
+    return undefined;
   }
 
   private async callOllama(prompt: string, baseUrl: string, model: string): Promise<string> {

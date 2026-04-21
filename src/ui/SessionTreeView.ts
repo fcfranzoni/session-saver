@@ -295,7 +295,8 @@ export class SavedSessionItem extends vscode.TreeItem {
     }
     if (session.notes)  { tooltipLines.push('', session.notes); }
     const md = new vscode.MarkdownString(tooltipLines.join('\n\n'));
-    md.isTrusted = true;
+    // isTrusted is intentionally NOT set: ticket URLs are http/https (no command: URIs needed)
+    // and we must not allow command: injection from user-controlled session data.
     this.tooltip = md;
 
     this.iconPath = new vscode.ThemeIcon(session.pinned ? 'pinned' : 'save');
